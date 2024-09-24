@@ -1,0 +1,57 @@
+
+# ##########################################################
+# Package
+
+[package]
+
+authors = [
+	"Matt Wilson <matthew@synesis.com.au>",
+]
+description = "Special and custom Collections and Containers (for Rust)"
+edition = "2021"
+homepage = "https://github.com/synesissoftware/collect-rs"
+license = "BSD-3-Clause"
+name = "collect-rs"
+readme = "README.md"
+version = "0.0.0"
+
+
+# ##########################################################
+# Targets
+
+[lib]
+name = "collect_rs"
+path = "src/lib.rs"
+
+
+# ##########################################################
+# Features
+
+[features]
+
+# General features:
+#
+# - "null-feature" - a feature that has no effect (and, thus, is useful for simplifying driver scripts);
+
+null-feature = []
+
+# Crate-specific features:
+#
+
+
+# ##########################################################
+# Dependencies
+
+[dependencies]
+
+base-traits = { version = "0.0" }
+
+
+[dev-dependencies]
+
+criterion = { version = "0.5" }
+test_help-rs = { version = "0.1" }
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
