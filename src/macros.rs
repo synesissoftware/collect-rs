@@ -1,4 +1,3 @@
-
 /// Simpler means to declare a module (`$mod_name`) and publish 1+ of its
 /// elements (`$type_name`s), as in:
 ///
@@ -22,4 +21,3 @@ pub(crate) use declare_and_publish;
 
 
 // ///////////////////////////// end of file //////////////////////////// //
-
