@@ -45,7 +45,7 @@ No public macros are defined at this time.
 
 ### Structures
 
-No public structures are defined at this time.
+* `UnicodePointMap` - a specialised container that measures the frequencies of Unicode code-points;
 
 
 ### Traits
