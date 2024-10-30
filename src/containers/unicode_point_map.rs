@@ -21,7 +21,7 @@ pub(crate) mod constants {
 }
 
 
-/// A container that measures the frequences of the unique characters that
+/// A container that measures the frequencies of the unique code points that
 /// it contains.
 #[derive(Debug)]
 pub struct UnicodePointMap {
