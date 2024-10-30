@@ -27,7 +27,7 @@ pub(crate) mod constants {
 pub struct UnicodePointMap {
     /// The number of unique characters represented.
     len : usize,
-    /// The totel number of characters represented.
+    /// The total number of characters represented.
     total : i64,
     /// Contiguous storage for common characters.
     vec :   Vec<isize>,
