@@ -313,6 +313,7 @@ impl UnicodePointMap {
 impl UnicodePointMap {
     /// Returns the number of elements the map can hold without
     /// reallocation.
+    #[inline]
     pub fn capacity(&self) -> usize {
         self.vec.len() + self.map.capacity()
     }
@@ -380,7 +381,6 @@ impl Iterator for UnicodePointMapIter<'_> {
     ///
     /// Returns `None` when iteration is finished. Further calls continue
     /// to return `None`.
-    #[inline]
     fn next(&mut self) -> Option<(char, isize)> {
         debug_assert!(self.vec_index.is_none() || self.map_iter.is_none());
 
@@ -492,6 +492,7 @@ impl UnicodePointMap {
 
 impl Default for UnicodePointMap {
     /// Creates an empty instance.
+    #[inline]
     fn default() -> Self {
         Self::new(constants::DEFAULT_CONTIGUOUS_CEILING)
     }
