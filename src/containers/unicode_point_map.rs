@@ -294,10 +294,7 @@ impl UnicodePointMap {
         if ix < self.vec.len() {
             self.vec[ix]
         } else {
-            match self.map.get(c) {
-                Some(&v) => v,
-                None => 0,
-            }
+            self.map.get(c).copied().unwrap_or_default()
         }
     }
 
