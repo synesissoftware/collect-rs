@@ -29,7 +29,7 @@ mod util {
 
         let c_u32 = c as u32;
 
-        debug_assert!(c_u32 < 0x110000, "parameter `c` must be in the range [0, 0x110000) but has the value {c_u32}");
+        debug_assert!(c_u32 < 0x110000, "parameter `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000), but has the value {c_u32}");
 
         // Rust does not have a specific `usize` size defined, so we do a
         // check here in case sizeof(usize)<sizeof(char)
@@ -108,8 +108,7 @@ impl UnicodePointMap {
     /// Inserts a record for the given `c` with the given `count`.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn insert(
         &mut self,
         c : char,
@@ -179,8 +178,7 @@ impl UnicodePointMap {
     /// of 1, a new record for the given key.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn push(
         &mut self,
         c : char,
@@ -220,8 +218,7 @@ impl UnicodePointMap {
     /// a new record for the given key with the given count.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn push_n(
         &mut self,
         c : char,
@@ -272,8 +269,7 @@ impl UnicodePointMap {
     /// key was previously in the map.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn remove(
         &mut self,
         c : &char
@@ -324,8 +320,7 @@ impl UnicodePointMap {
     /// Indicates whether a record exists for the given key.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn contains_key(
         &self,
         c : &char,
@@ -347,8 +342,7 @@ impl UnicodePointMap {
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
-    ///
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     pub fn get(
         &self,
         c : &char,
@@ -575,7 +569,7 @@ impl std_ops::Index<char> for UnicodePointMap {
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     ///
     /// # Panics
     ///
@@ -599,7 +593,7 @@ impl std_ops::Index<&char> for UnicodePointMap {
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
     ///
     /// # Panics
     ///
