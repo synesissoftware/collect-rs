@@ -5,12 +5,13 @@ use collect_rs::containers::UnicodePointMap;
 use std::{
     env as std_env,
     fs as std_fs,
+    io as std_io,
     process as std_process,
     str as std_str,
 };
 
 
-fn main() {
+fn main() -> Result<(), std_io::Error> {
     let mut process_path = None;
     let mut input_path = None;
 
@@ -23,7 +24,7 @@ fn main() {
 
             println!("USAGE: {} <input-path>", process_path.unwrap());
 
-            return;
+            return Ok(());
         } else {
             match process_path {
                 None => {
@@ -45,16 +46,16 @@ fn main() {
         }
     }
 
-    process_file(&process_path.unwrap(), &input_path.unwrap());
+    process_file(&process_path.unwrap(), &input_path.unwrap())
 }
 
 fn process_file(
     process_path : &str,
     input_path : &str,
-) {
+) -> Result<(), std_io::Error> {
     println!("processing '{input_path}'");
 
-    let v = std_fs::read(input_path).unwrap();
+    let v = std_fs::read(input_path)?;
 
     let mut upm = UnicodePointMap::new('\u{10000}');
 
@@ -74,6 +75,8 @@ fn process_file(
             }
         );
     }
+
+    Ok(())
 }
 
 
