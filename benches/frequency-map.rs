@@ -264,7 +264,7 @@ fn BENCHMARK_with_capacity_SMALL(c : &mut Criterion) {
 
     c.bench_function(&id, |b| {
         b.iter(|| {
-            let fm : FrequencyMap<String> = FrequencyMap::with_capacity(INITIAL_CAPACITY);
+            let fm : FrequencyMap<String> = FrequencyMap::with_capacity(black_box(INITIAL_CAPACITY));
 
             let _ = black_box(fm);
         })
