@@ -15,7 +15,7 @@ use std::{
 pub(crate) mod constants {
 
     #[cfg(debug_assertions)]
-    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{80000}';
+    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{80}';
     #[cfg(not(debug_assertions))]
     pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{1000}';
 }
