@@ -11,14 +11,15 @@ use std::{
 
 
 fn main() {
-
     let mut process_path = None;
     let mut input_path = None;
 
     for arg in std_env::args() {
-
         if "--help" == arg {
-            assert!(process_path.is_some(), "Rust runtime failed to provide program name as first element in `std::env::args`");
+            assert!(
+                process_path.is_some(),
+                "Rust runtime failed to provide program name as first element in `std::env::args`"
+            );
 
             println!("USAGE: {} <input-path>", process_path.unwrap());
 
@@ -39,7 +40,7 @@ fn main() {
                             std_process::exit(1);
                         },
                     }
-                }
+                },
             }
         }
     }
@@ -62,8 +63,16 @@ fn process_file(
     }
 
     println!("results ({}, {}):", upm.len(), upm.total());
-    for (c , count) in upm.iter() {
-        println!("{} {} : {count}", c as u32, if c.is_control() { format!("{:#06x}", c as u32) } else { c.to_string() } );
+    for (c, count) in upm.iter() {
+        println!(
+            "{} {} : {count}",
+            c as u32,
+            if c.is_control() {
+                format!("{:#06x}", c as u32)
+            } else {
+                c.to_string()
+            }
+        );
     }
 }
 

@@ -7,8 +7,6 @@ use base_traits::{
 
 use std::{
     collections::HashMap,
-    cmp as std_cmp,
-    hash as std_hash,
     ops as std_ops,
 };
 
@@ -91,10 +89,8 @@ impl UnicodePointMap {
                 if 0 != curr {
                     self.len += 1;
                 }
-            } else {
-                if 0 == curr {
-                    self.len -= 1;
-                }
+            } else if 0 == curr {
+                self.len -= 1;
             }
 
             self.total += (curr - prev) as i64;
@@ -198,13 +194,11 @@ impl UnicodePointMap {
                     } else {
                         self.len += 1;
                     }
-                } else {
-                    if 0 == new {
-                        self.len -= 1;
-                    } else {
-                    }
+                } else if 0 == new {
+                    self.len -= 1;
                 }
             } else {
+                #[allow(clippy::collapsible_else_if)]
                 if let Some(v) = self.map.get_mut(&c) {
                     debug_assert!(0 != *v);
 
@@ -324,7 +318,7 @@ pub struct UnicodePointMapIter<'a> {
     map_iter : Option<std::collections::hash_map::Iter<'a, char, isize>>,
 }
 
-impl<'a> Iterator for UnicodePointMapIter<'a> {
+impl Iterator for UnicodePointMapIter<'_> {
     type Item = (char, isize);
 
     /// Advances the iterator and returns the next value.
