@@ -15,9 +15,34 @@ use std::{
 pub(crate) mod constants {
 
     #[cfg(debug_assertions)]
-    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{80}';
+    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{80000}';
     #[cfg(not(debug_assertions))]
     pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{1000}';
+}
+
+
+mod util {
+
+    /// Converts the
+    #[inline]
+    pub fn char_to_valid_index(c : char) -> usize {
+
+        let c_u32 = c as u32;
+
+        debug_assert!(c_u32 < 0x110000, "parameter `c` must be in the range [0, 0x110000) but has the value {c_u32}");
+
+        // Rust does not have a specific `usize` size defined, so we do a
+        // check here in case sizeof(usize)<sizeof(char)
+
+        let usize_max_u64 = usize::MAX as u64;
+        let c_u64 = c as u64;
+
+        if c_u64 > usize_max_u64 {
+            usize_max_u64 as usize
+        } else {
+            c_u64 as usize
+        }
+    }
 }
 
 
@@ -71,7 +96,8 @@ impl UnicodePointMap {
 // Mutating methods
 
 impl UnicodePointMap {
-    /// Removes all character entries.
+    /// Clears the map, removing all key-count pairs and resets `#total()`.
+    #[inline]
     pub fn clear(&mut self) {
         self.map.clear();
         self.vec.fill(0);
@@ -79,12 +105,17 @@ impl UnicodePointMap {
         self.len = 0;
     }
 
+    /// Inserts a record for the given `c` with the given `count`.
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn insert(
         &mut self,
         c : char,
         count : isize
     ) -> Option<isize> {
-        let ix = c as usize;
+        let ix = util::char_to_valid_index(c);
 
         if ix < self.vec.len() {
 
@@ -146,11 +177,15 @@ impl UnicodePointMap {
 
     /// Updates the count of the given record by 1, or creates, with a count
     /// of 1, a new record for the given key.
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn push(
         &mut self,
         c : char,
     ) {
-        let ix = c as usize;
+        let ix = util::char_to_valid_index(c);
 
         if ix < self.vec.len() {
 
@@ -183,13 +218,17 @@ impl UnicodePointMap {
 
     /// Updates the count of the given record by the given count, or creates
     /// a new record for the given key with the given count.
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn push_n(
         &mut self,
         c : char,
         count : isize
     ) {
         if 0 != count {
-            let ix = c as usize;
+            let ix = util::char_to_valid_index(c);
 
             if ix < self.vec.len() {
                 let prev = self.vec[ix];
@@ -231,11 +270,15 @@ impl UnicodePointMap {
 
     /// Removes an entry from the map, returning the count of the key if the
     /// key was previously in the map.
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn remove(
         &mut self,
         c : &char
     ) -> Option<isize> {
-        let ix = *c as usize;
+        let ix = util::char_to_valid_index(*c);
 
         if ix < self.vec.len() {
             let prev = self.vec[ix];
@@ -279,11 +322,15 @@ impl UnicodePointMap {
     }
 
     /// Indicates whether a record exists for the given key.
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn contains_key(
         &self,
         c : &char,
     ) -> bool {
-        let ix = *c as usize;
+        let ix = util::char_to_valid_index(*c);
 
         if ix < self.vec.len() {
             self.vec[ix] != 0
@@ -294,11 +341,19 @@ impl UnicodePointMap {
 
     /// Obtains the count corresponding to the given key, obtaining 0 in the
     /// case that no such record exists.
+    ///
+    /// # Parameters:
+    /// - `c` - the character for which to search. Must be a valid `char`
+    ///   value
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     pub fn get(
         &self,
         c : &char,
     ) -> isize {
-        let ix = *c as usize;
+        let ix = util::char_to_valid_index(*c);
 
         if ix < self.vec.len() {
             self.vec[ix]
@@ -414,14 +469,14 @@ impl UnicodePointMap {
 
     fn get_(
         &self,
-        key : &char
+        c : &char
     ) -> &isize {
-        let ix = *key as usize;
+        let ix = util::char_to_valid_index(*c);
 
         if ix < self.vec.len() {
             &self.vec[ix]
         } else {
-            match self.map.get(key) {
+            match self.map.get(c) {
                 Some(count) => count,
                 None => &0
             }
@@ -515,15 +570,22 @@ impl std_ops::Index<char> for UnicodePointMap {
 
     /// Performs the indexing (`container[index]`) operation.
     ///
+    /// # Parameters:
+    /// - `c` - the character for which to search. Must be a valid `char`
+    ///   value
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     /// # Panics
     ///
     /// May panic if the index is out of bounds.
     #[inline]
     fn index(
         &self,
-        key : char
+        c : char
     ) -> &Self::Output {
-        self.get_(&key)
+        self.get_(&c)
     }
 }
 
@@ -532,15 +594,22 @@ impl std_ops::Index<&char> for UnicodePointMap {
 
     /// Performs the indexing (`container[index]`) operation.
     ///
+    /// # Parameters:
+    /// - `c` - the character for which to search. Must be a valid `char`
+    ///   value
+    ///
+    /// # Preconditions:
+    /// - `c` - `c` must be in the range [0, 0x110000);
+    ///
     /// # Panics
     ///
     /// May panic if the index is out of bounds.
     #[inline]
     fn index(
         &self,
-        key : &char
+        c : &char
     ) -> &Self::Output {
-        self.get_(key)
+        self.get_(c)
     }
 }
 
