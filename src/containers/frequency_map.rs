@@ -291,7 +291,7 @@ impl<K> FrequencyMap<K> {
     }
 }
 
-// Implemetation
+// Implementation
 
 impl<K : std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
     fn get_<Q>(&self, key: &Q) -> &isize
