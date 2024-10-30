@@ -45,9 +45,18 @@ impl UnicodePointMap {
         default_contiguous_ceiling : char
     ) -> Self {
 
+        let ceiling = {
+            // Rust does not have a specific `usize` size defined, so we do a
+            // check here in case sizeof(usize)<sizeof(char)
+            let ceiling_max_u64 = usize::MAX as u64;
+            let default_contiguous_ceiling_u64 = default_contiguous_ceiling as u64;
+
+            (if default_contiguous_ceiling_u64 > ceiling_max_u64 { ceiling_max_u64 } else { default_contiguous_ceiling_u64 }) as usize
+        };
+
         let len = 0;
         let total = 0;
-        let vec = vec![0; default_contiguous_ceiling as usize];
+        let vec = vec![0; ceiling];
         let map = HashMap::new();
 
         Self {
