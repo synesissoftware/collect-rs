@@ -116,13 +116,12 @@ impl UnicodePointMap {
     ) -> Option<isize> {
         let ix = util::char_to_valid_index(c);
 
-        if ix < self.vec.len() {
+        if let Some(v) = self.vec.get_mut(ix) {
+            let prev = *v;
 
-            let prev = self.vec[ix];
+            *v = count;
 
-            self.vec[ix] = count;
-
-            let curr = self.vec[ix];
+            let curr = *v;
 
             if 0 == prev {
                 if 0 != curr {
@@ -185,11 +184,10 @@ impl UnicodePointMap {
     ) {
         let ix = util::char_to_valid_index(c);
 
-        if ix < self.vec.len() {
+        if let Some(v) = self.vec.get_mut(ix) {
+            let prev = *v;
 
-            let prev = self.vec[ix];
-
-            self.vec[ix] += 1;
+            *v += 1;
 
             if 0 == prev {
                 self.len += 1;
@@ -227,12 +225,12 @@ impl UnicodePointMap {
         if 0 != count {
             let ix = util::char_to_valid_index(c);
 
-            if ix < self.vec.len() {
-                let prev = self.vec[ix];
+            if let Some(v) = self.vec.get_mut(ix) {
+                let prev = *v;
 
-                self.vec[ix] += count;
+                *v += count;
 
-                let new = self.vec[ix];
+                let new = *v;
 
                 if 0 == prev {
                     if 0 == new {
@@ -276,10 +274,10 @@ impl UnicodePointMap {
     ) -> Option<isize> {
         let ix = util::char_to_valid_index(*c);
 
-        if ix < self.vec.len() {
-            let prev = self.vec[ix];
+        if let Some(v) = self.vec.get_mut(ix) {
+            let prev = *v;
 
-            self.vec[ix] = 0;
+            *v = 0;
 
             if 0 != prev {
                 self.len -= 1;
@@ -328,8 +326,8 @@ impl UnicodePointMap {
     ) -> bool {
         let ix = util::char_to_valid_index(*c);
 
-        if ix < self.vec.len() {
-            self.vec[ix] != 0
+        if let Some(&count) = self.vec.get(ix) {
+            count != 0
         } else {
             self.map.contains_key(c)
         }
@@ -350,8 +348,8 @@ impl UnicodePointMap {
     ) -> isize {
         let ix = util::char_to_valid_index(*c);
 
-        if ix < self.vec.len() {
-            self.vec[ix]
+        if let Some(&count) = self.vec.get(ix) {
+            count
         } else {
             self.map.get(c).copied().unwrap_or_default()
         }
@@ -467,8 +465,8 @@ impl UnicodePointMap {
     ) -> &isize {
         let ix = util::char_to_valid_index(*c);
 
-        if ix < self.vec.len() {
-            &self.vec[ix]
+        if let Some(count) = self.vec.get(ix) {
+            count
         } else {
             match self.map.get(c) {
                 Some(count) => count,
@@ -682,6 +680,15 @@ mod tests {
         assert_eq!(0, upm[&'🐻']);
         assert_eq!(0, upm[&'🐼']);
 
+        assert!(!upm.contains_key(&'\0'));
+        assert!(!upm.contains_key(&'a'));
+        assert!(!upm.contains_key(&'b'));
+        assert!(!upm.contains_key(&'c'));
+        assert!(!upm.contains_key(&'0'));
+        assert!(!upm.contains_key(&'A'));
+        assert!(!upm.contains_key(&'🐻'));
+        assert!(!upm.contains_key(&'🐼'));
+
         upm.push('a');
         upm.push('b');
         upm.push('a');
@@ -698,6 +705,15 @@ mod tests {
         assert_eq!(0, upm[&'A']);
         assert_eq!(0, upm[&'🐻']);
         assert_eq!(0, upm[&'🐼']);
+
+        assert!(!upm.contains_key(&'\0'));
+        assert!(upm.contains_key(&'a'));
+        assert!(upm.contains_key(&'b'));
+        assert!(!upm.contains_key(&'c'));
+        assert!(!upm.contains_key(&'0'));
+        assert!(!upm.contains_key(&'A'));
+        assert!(!upm.contains_key(&'🐻'));
+        assert!(!upm.contains_key(&'🐼'));
 
         upm.push('🐻');
         upm.push('a');
@@ -716,6 +732,15 @@ mod tests {
         assert_eq!(2, upm['🐻']);
         assert_eq!(0, upm['🐼']);
 
+        assert!(!upm.contains_key(&'\0'));
+        assert!(upm.contains_key(&'a'));
+        assert!(upm.contains_key(&'b'));
+        assert!(!upm.contains_key(&'c'));
+        assert!(!upm.contains_key(&'0'));
+        assert!(!upm.contains_key(&'A'));
+        assert!(upm.contains_key(&'🐻'));
+        assert!(!upm.contains_key(&'🐼'));
+
         upm.clear();
 
         assert!(upm.is_empty());
@@ -730,6 +755,15 @@ mod tests {
         assert_eq!(0, upm['A']);
         assert_eq!(0, upm['🐻']);
         assert_eq!(0, upm['🐼']);
+
+        assert!(!upm.contains_key(&'\0'));
+        assert!(!upm.contains_key(&'a'));
+        assert!(!upm.contains_key(&'b'));
+        assert!(!upm.contains_key(&'c'));
+        assert!(!upm.contains_key(&'0'));
+        assert!(!upm.contains_key(&'A'));
+        assert!(!upm.contains_key(&'🐻'));
+        assert!(!upm.contains_key(&'🐼'));
     }
 
     #[test]
