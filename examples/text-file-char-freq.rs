@@ -1,4 +1,4 @@
-// examples/text-file-char-freq.rs : ;
+// examples/text-file-char-freq.rs : example program that does a frequency analysis of characters in a (presumed to be) text file;
 
 use collect_rs::containers::UnicodePointMap;
 
