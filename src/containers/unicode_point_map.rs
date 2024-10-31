@@ -17,30 +17,62 @@ pub(crate) mod constants {
     #[cfg(debug_assertions)]
     pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{80}';
     #[cfg(not(debug_assertions))]
-    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{1000}';
+    pub(crate) const DEFAULT_CONTIGUOUS_CEILING : char = '\u{200}';
+
+    pub(crate) const MAXIMUM_VALID_CHAR_VALUE : u32 = 0x10ffff;
 }
 
 
 mod util {
 
-    /// Converts the
+    use super::constants::MAXIMUM_VALID_CHAR_VALUE;
+
+    use std::mem as std_mem;
+
+
+    /// Converts the given `char` value to a `usize` value that is expected,
+    /// taking into account when sizeof(char) > sizeof(usize), and asserting
+    /// that `c` is in the valid character range.
     #[inline]
     pub fn char_to_valid_index(c : char) -> usize {
 
-        let c_u32 = c as u32;
+        let c_u32 = u32::from(c);
 
-        debug_assert!(c_u32 < 0x110000, "parameter `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000), but has the value {c_u32}");
+        debug_assert!(c_u32 <= MAXIMUM_VALID_CHAR_VALUE, "parameter `c` must be a valid `char` instance, i.e. be in the range [0, {MAXIMUM_VALID_CHAR_VALUE}), but has the value {c_u32}");
 
         // Rust does not have a specific `usize` size defined, so we do a
         // check here in case sizeof(usize)<sizeof(char)
 
-        let usize_max_u64 = usize::MAX as u64;
-        let c_u64 = c as u64;
+        #[cfg(not(any(
+            target_pointer_width = "16",
+            target_pointer_width = "32",
+            target_pointer_width = "64",
+            target_pointer_width = "128",
+        )))]
+        {
+            compile_error!(r#"this code not valid for any `"target_pointer_width"` value other than `"16"`, `"32"`, `"64", `"128"`"#);
+        }
 
-        if c_u64 > usize_max_u64 {
-            usize_max_u64 as usize
+        if cfg!(target_pointer_width = "16") {
+            // since a `char` is (according to standard) always 32-bits, in
+            // this circumstance we may have a character value that exceeds
+            // the 16-bits of `usize`
+            debug_assert!(std_mem::size_of::<usize>() < std_mem::size_of::<char>());
+
+            let usize_max_u32 = usize::MAX as u32;
+
+            if c_u32 > usize_max_u32 {
+                usize_max_u32 as usize
+            } else {
+                c_u32 as usize
+            }
         } else {
-            c_u64 as usize
+            // since a `char` is (according to standard) always 32-bits, in
+            // this circumstance we can simply convert the character (in
+            // its `u32` form) into `usize`
+            debug_assert!(std_mem::size_of::<usize>() >= std_mem::size_of::<char>());
+
+            c_u32 as usize
         }
     }
 }
@@ -69,14 +101,32 @@ impl UnicodePointMap {
     pub fn new(
         default_contiguous_ceiling : char
     ) -> Self {
-
+        // validate `default_contiguous_ceiling` fits in the valid range for
+        // values for `char` and the valid range of storage for `usize`
         let ceiling = {
+            let dcc_u32 = {
+                let dcc_u32 = default_contiguous_ceiling as u32;
+
+                if dcc_u32 > constants::MAXIMUM_VALID_CHAR_VALUE {
+                    constants::MAXIMUM_VALID_CHAR_VALUE
+                } else {
+                    dcc_u32
+                }
+            };
+
             // Rust does not have a specific `usize` size defined, so we do a
             // check here in case sizeof(usize)<sizeof(char)
-            let ceiling_max_u64 = usize::MAX as u64;
-            let default_contiguous_ceiling_u64 = default_contiguous_ceiling as u64;
+            if cfg!(target_pointer_width = "16") {
+                let usize_MAX_u32 = usize::MAX as u32;
 
-            (if default_contiguous_ceiling_u64 > ceiling_max_u64 { ceiling_max_u64 } else { default_contiguous_ceiling_u64 }) as usize
+                if dcc_u32 > usize_MAX_u32 {
+                    usize_MAX_u32 as usize
+                } else {
+                    dcc_u32 as usize
+                }
+            } else {
+                dcc_u32 as usize
+            }
         };
 
         let len = 0;
@@ -387,9 +437,16 @@ impl Iterator for UnicodePointMapIter<'_> {
                 let count = self.upm.vec[*ix];
 
                 if 0 != count {
-                    let c = *ix;
-                    let c = c as u32;
-                    let c = unsafe { char::from_u32_unchecked(c) };
+                    // NOTE: although it is possible (e.g. on 16-bit arch)
+                    // for sizeof(char)>sizeof(usize) it is an invariant of
+                    // the `UnicodePointMap` design that *ix cannot exceed
+                    // `usize`, so following brute-force is well-defined.
+                    let c = unsafe {
+                        let c_usize = *ix;
+                        let c_u32 = c_usize as u32;
+
+                        char::from_u32_unchecked(c_u32)
+                    };
 
                     *ix += 1;
 
