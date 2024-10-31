@@ -23,6 +23,10 @@ version = "0.0.1"
 name = "collect_rs"
 path = "src/lib.rs"
 
+[[bench]]
+name = "unicode-point-map"
+harness = false
+
 [[example]]
 name = "text-file-char-freq"
 path = "examples/text-file-char-freq.rs"
