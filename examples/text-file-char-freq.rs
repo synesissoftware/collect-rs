@@ -59,8 +59,15 @@ fn process_file(
 
     let mut upm = UnicodePointMap::new('\u{10000}');
 
-    for c in std_str::from_utf8(&v).unwrap().chars() {
-        upm.push(c);
+    match std_str::from_utf8(&v) {
+        Ok(s) => {
+            for c in s.chars() {
+                upm.push(c);
+            }
+        },
+        Err(e) => {
+            return Err(std_io::ErrorKind::InvalidInput.into());
+        }
     }
 
     println!("results ({}, {}):", upm.len(), upm.total());

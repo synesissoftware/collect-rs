@@ -6,14 +6,24 @@
 
 authors = [
 	"Matt Wilson <matthew@synesis.com.au>",
+	"Zach Struck <zachstruck@gmail.com>",
+]
+categories = [
+	"data-structures",
+	"rust-patterns",
 ]
 description = "Special and custom Collections and Containers (for Rust)"
 edition = "2021"
 homepage = "https://github.com/synesissoftware/collect-rs"
+keywords = [
+	"containers",
+	"collections",
+]
 license = "BSD-3-Clause"
 name = "collect-rs"
 readme = "README.md"
-version = "0.1.0"
+repository = "https://github.com/synesissoftware/collect-rs"
+version = "0.1.1"
 
 
 # ##########################################################
