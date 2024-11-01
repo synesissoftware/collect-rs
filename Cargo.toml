@@ -24,6 +24,10 @@ name = "collect_rs"
 path = "src/lib.rs"
 
 [[bench]]
+name = "frequency-map"
+harness = false
+
+[[bench]]
 name = "unicode-point-map"
 harness = false
 

@@ -45,6 +45,7 @@ No public macros are defined at this time.
 
 ### Structures
 
+* `FrequencyMap<K>` - a container that measures the frequencies of the unique elements it contains;
 * `UnicodePointMap` - a specialised container that measures the frequencies of Unicode code-points;
 
 
