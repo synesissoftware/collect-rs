@@ -24,6 +24,7 @@ pub(crate) mod constants {
 
 
 mod util {
+    #![allow(unexpected_cfgs)] // NOTE: this is to allow `target_pointer_width = "128"` for future-proof
 
     use super::constants::MAXIMUM_VALID_CHAR_VALUE;
 
@@ -117,10 +118,10 @@ impl UnicodePointMap {
             // Rust does not have a specific `usize` size defined, so we do a
             // check here in case sizeof(usize)<sizeof(char)
             if cfg!(target_pointer_width = "16") {
-                let usize_MAX_u32 = usize::MAX as u32;
+                let usize_max_u32 = usize::MAX as u32;
 
-                if dcc_u32 > usize_MAX_u32 {
-                    usize_MAX_u32 as usize
+                if dcc_u32 > usize_max_u32 {
+                    usize_max_u32 as usize
                 } else {
                     dcc_u32 as usize
                 }

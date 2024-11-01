@@ -13,7 +13,7 @@ homepage = "https://github.com/synesissoftware/collect-rs"
 license = "BSD-3-Clause"
 name = "collect-rs"
 readme = "README.md"
-version = "0.0.1"
+version = "0.1.0"
 
 
 # ##########################################################
@@ -22,6 +22,10 @@ version = "0.0.1"
 [lib]
 name = "collect_rs"
 path = "src/lib.rs"
+
+[[bench]]
+name = "frequency-map"
+harness = false
 
 [[bench]]
 name = "unicode-point-map"
