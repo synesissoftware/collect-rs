@@ -13,7 +13,7 @@ homepage = "https://github.com/synesissoftware/collect-rs"
 license = "BSD-3-Clause"
 name = "collect-rs"
 readme = "README.md"
-version = "0.0.0"
+version = "0.1.0"
 
 
 # ##########################################################
@@ -23,6 +23,18 @@ version = "0.0.0"
 name = "collect_rs"
 path = "src/lib.rs"
 
+[[bench]]
+name = "frequency-map"
+harness = false
+
+[[bench]]
+name = "unicode-point-map"
+harness = false
+
+[[example]]
+name = "text-file-char-freq"
+path = "examples/text-file-char-freq.rs"
+
 
 # ##########################################################
 # Features
@@ -31,8 +43,10 @@ path = "src/lib.rs"
 
 # General features:
 #
+# - "_NEVER_TO_BE_ENABLED" - this is a placeholder feature and must NEVER be specified;
 # - "null-feature" - a feature that has no effect (and, thus, is useful for simplifying driver scripts);
 
+_NEVER_TO_BE_ENABLED = []
 null-feature = []
 
 # Crate-specific features:

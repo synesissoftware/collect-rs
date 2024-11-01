@@ -3,5 +3,8 @@
 use crate::macros::declare_and_publish;
 
 
-// ///////////////////////////// end of file //////////////////////////// //
+declare_and_publish!(frequency_map, FrequencyMap);
+declare_and_publish!(unicode_point_map, UnicodePointMap);
 
+
+// ///////////////////////////// end of file //////////////////////////// //
