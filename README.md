@@ -45,7 +45,7 @@ No public macros are defined at this time.
 
 ### Structures
 
-No public structures are defined at this time.
+* `FrequencyMap<K>` - a container that measures the frequencies of the unique elements it contains;
 
 
 ### Traits
