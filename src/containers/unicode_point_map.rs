@@ -83,15 +83,15 @@ mod util {
 /// it contains.
 #[derive(Debug)]
 pub struct UnicodePointMap {
-    /// The number of unique characters represented.
-    len : usize,
-    /// The total number of characters represented.
-    total : i64,
     /// Contiguous storage for common characters.
     vec :   Vec<isize>,
     /// Map for other characters outside the contiguous range provide by
     /// `self.vec`.
     map :   HashMap<char, isize>,
+    /// The number of unique characters represented.
+    len : usize,
+    /// The total number of characters represented.
+    total : i64,
 }
 
 // API functions
@@ -130,16 +130,16 @@ impl UnicodePointMap {
             }
         };
 
-        let len = 0;
-        let total = 0;
         let vec = vec![0; ceiling];
         let map = HashMap::new();
+        let len = 0;
+        let total = 0;
 
         Self {
-            len,
-            total,
             vec,
             map,
+            len,
+            total,
         }
     }
 }
@@ -147,19 +147,20 @@ impl UnicodePointMap {
 // Mutating methods
 
 impl UnicodePointMap {
-    /// Clears the map, removing all key-count pairs and resets `#total()`.
+    /// Clears the map, removing all records and resets `#total()`.
     #[inline]
     pub fn clear(&mut self) {
-        self.map.clear();
         self.vec.fill(0);
-        self.total = 0;
+        self.map.clear();
         self.len = 0;
+        self.total = 0;
     }
 
     /// Inserts a record for the given `c` with the given `count`.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     pub fn insert(
         &mut self,
         c : char,
@@ -224,11 +225,11 @@ impl UnicodePointMap {
         }
     }
 
-    /// Updates the count of the given record by 1, or creates, with a count
-    /// of 1, a new record for the given key.
+    /// Updates the count by 1 of an existing record identified by `c`, or
+    /// creates, with a count of 1, a new record.
     ///
-    /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// In the case that the resulting count of an existing record is 0 then
+    /// the record is removed.
     pub fn push(
         &mut self,
         c : char,
@@ -263,11 +264,11 @@ impl UnicodePointMap {
         }
     }
 
-    /// Updates the count of the given record by the given count, or creates
-    /// a new record for the given key with the given count.
+    /// Updates the count by `count` of an existing record identifed by
+    /// `c`, or creates, with the given `count`, a new record.
     ///
-    /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// In the case that the resulting count of an existing record is 0 then
+    /// the record is removed.
     pub fn push_n(
         &mut self,
         c : char,
@@ -318,7 +319,8 @@ impl UnicodePointMap {
     /// key was previously in the map.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     pub fn remove(
         &mut self,
         c : &char
@@ -360,17 +362,18 @@ impl UnicodePointMap {
 // Non-mutating methods
 
 impl UnicodePointMap {
-    /// Returns the number of elements the map can hold without
+    /// Returns the number of records the map can hold without
     /// reallocation.
     #[inline]
     pub fn capacity(&self) -> usize {
         self.vec.len() + self.map.capacity()
     }
 
-    /// Indicates whether a record exists for the given key.
+    /// Indicates whether a record exists for the given `c`.
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     pub fn contains_key(
         &self,
         c : &char,
@@ -384,15 +387,16 @@ impl UnicodePointMap {
         }
     }
 
-    /// Obtains the count corresponding to the given key, obtaining 0 in the
+    /// Obtains the count corresponding to the given `c`, obtaining 0 in the
     /// case that no such record exists.
     ///
     /// # Parameters:
-    /// - `c` - the character for which to search. Must be a valid `char`
+    /// - `c` - the character for which to search. Must be a valid [`char`]
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     pub fn get(
         &self,
         c : &char,
@@ -406,7 +410,7 @@ impl UnicodePointMap {
         }
     }
 
-    /// Indicates whether the instance contains no elements.
+    /// Indicates whether the instance contains no records.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.is_empty_()
@@ -496,13 +500,13 @@ impl UnicodePointMap {
 
 impl UnicodePointMap {
 
-    /// Indicates the number of records.
+    /// Obtains the number of records.
     #[inline]
     pub fn len(&self) -> usize {
         self.len_()
     }
 
-    /// Indicates the total count across all keys.
+    /// Indicates the total frequency count across all records.
     #[inline]
     pub fn total(&self) -> i64 {
         self.total_()
@@ -555,8 +559,7 @@ impl Default for UnicodePointMap {
 }
 
 impl<const N: usize> From<[(char, isize); N]> for UnicodePointMap {
-    /// Creates an instance comprising a frequency analysis of the elements
-    /// in `value`.
+    /// Creates an instance from an array of key + count pairs.
     fn from(value: [(char, isize); N]) -> Self {
         // TODO: consider finding max element and calling `::new()` appropriately
         let mut upm = UnicodePointMap::default();
@@ -570,8 +573,7 @@ impl<const N: usize> From<[(char, isize); N]> for UnicodePointMap {
 }
 
 impl<const N: usize> From<[char; N]> for UnicodePointMap {
-    /// Creates an instance comprising a frequency analysis of the elements
-    /// in `value`.
+    /// Creates an instance from an array of keys.
     fn from(value: [char; N]) -> Self {
         // TODO: consider finding max element and calling `::new()` appropriately
         let mut upm = UnicodePointMap::default();
@@ -585,8 +587,7 @@ impl<const N: usize> From<[char; N]> for UnicodePointMap {
 }
 
 impl FromIterator<(char, isize)> for UnicodePointMap {
-    /// Creates an instance comprising a frequency analysis of the elements
-    /// in `iter`.
+    /// Creates an instance from an iterator of keys + count pairs.
     fn from_iter<T: IntoIterator<Item = (char, isize)>>(iter: T) -> Self {
         let iter = iter.into_iter();
 
@@ -601,8 +602,7 @@ impl FromIterator<(char, isize)> for UnicodePointMap {
 }
 
 impl FromIterator<char> for UnicodePointMap {
-    /// Creates an instance comprising a frequency analysis of the elements
-    /// in `iter`.
+    /// Creates an instance from an iterator of keys.
     fn from_iter<T: IntoIterator<Item = char>>(iter: T) -> Self {
         let iter = iter.into_iter();
 
@@ -622,11 +622,12 @@ impl std_ops::Index<char> for UnicodePointMap {
     /// Performs the indexing (`container[index]`) operation.
     ///
     /// # Parameters:
-    /// - `c` - the character for which to search. Must be a valid `char`
+    /// - `c` - the character for which to search. Must be a valid [`char`]
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     ///
     /// # Panics
     ///
@@ -646,11 +647,12 @@ impl std_ops::Index<&char> for UnicodePointMap {
     /// Performs the indexing (`container[index]`) operation.
     ///
     /// # Parameters:
-    /// - `c` - the character for which to search. Must be a valid `char`
+    /// - `c` - the character for which to search. Must be a valid [`char`]
     ///   value
     ///
     /// # Preconditions:
-    /// - `c` - `c` must be a valid `char` instance, i.e. be in the range [0, 0x110000);
+    /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
+    ///   [0, 0x110000);
     ///
     /// # Panics
     ///
@@ -665,7 +667,7 @@ impl std_ops::Index<&char> for UnicodePointMap {
 }
 
 impl IsEmpty for UnicodePointMap {
-    /// Indicates whether the instance contains no elements.
+    /// Indicates whether the instance contains no records.
     #[inline]
     fn is_empty(&self) -> bool {
         self.is_empty_()
@@ -673,7 +675,7 @@ impl IsEmpty for UnicodePointMap {
 }
 
 impl Len for UnicodePointMap {
-    /// Indicates the number of records.
+    /// Obtains the number of records.
     #[inline]
     fn len(&self) -> usize {
         self.len_()
@@ -905,7 +907,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_From_ELEMENTS_1() {
+    fn TEST_From_PAIRS_1() {
         let upm = UnicodePointMap::from([
             // insert list
             ('a', 2),
@@ -967,7 +969,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_FromIterator_ELEMENTS_1() {
+    fn TEST_FromIterator_PAIR0S_1() {
         let v = vec![
             // insert list
             ('a', 1),
@@ -1278,6 +1280,46 @@ mod tests {
             assert_eq!(-1, upm['🐻']);
             assert_eq!(0, upm['🐼']);
         }
+    }
+
+    #[test]
+    fn TEST_FrequencyMap_EXAMPLE_1() {
+        let upm = UnicodePointMap::from_iter("The quick brown fox jumps over the lazy dog".chars().into_iter());
+
+        assert_eq!(1, upm['a']);
+        assert_eq!(1, upm['b']);
+        assert_eq!(1, upm['c']);
+        assert_eq!(1, upm['d']);
+        assert_eq!(3, upm['e']);
+        assert_eq!(1, upm['f']);
+        assert_eq!(1, upm['g']);
+        assert_eq!(2, upm['h']);
+        assert_eq!(1, upm['i']);
+        assert_eq!(1, upm['j']);
+        assert_eq!(1, upm['k']);
+        assert_eq!(1, upm['l']);
+        assert_eq!(1, upm['m']);
+        assert_eq!(1, upm['n']);
+        assert_eq!(4, upm['o']);
+        assert_eq!(1, upm['p']);
+        assert_eq!(1, upm['q']);
+        assert_eq!(2, upm['r']);
+        assert_eq!(1, upm['s']);
+        assert_eq!(1, upm['t']);
+        assert_eq!(2, upm['u']);
+        assert_eq!(1, upm['v']);
+        assert_eq!(1, upm['w']);
+        assert_eq!(1, upm['x']);
+        assert_eq!(1, upm['y']);
+        assert_eq!(1, upm['z']);
+        assert_eq!(8, upm[' ']);
+        assert_eq!(1, upm['T']);
+
+        assert_eq!(0, upm['0']);
+        assert_eq!(0, upm['-']);
+        assert_eq!(0, upm['_']);
+        assert_eq!(0, upm['.']);
+        assert_eq!(0, upm[',']);
     }
 }
 

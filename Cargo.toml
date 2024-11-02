@@ -23,7 +23,7 @@ license = "BSD-3-Clause"
 name = "collect-rs"
 readme = "README.md"
 repository = "https://github.com/synesissoftware/collect-rs"
-version = "0.1.1"
+version = "0.2.0"
 
 
 # ##########################################################

@@ -5,11 +5,13 @@ use base_traits::{
     Len,
 };
 
-use std::borrow as std_borrow;
-use std::cmp as std_cmp;
-use std::collections::HashMap;
-use std::hash as std_hash;
-use std::ops as std_ops;
+use std::{
+    borrow as std_borrow,
+    cmp as std_cmp,
+    collections::HashMap,
+    hash as std_hash,
+    ops as std_ops,
+};
 
 
 /// A container that measures the frequencies of the unique elements it
@@ -22,9 +24,9 @@ use std::ops as std_ops;
 #[derive(Debug)]
 #[derive(Default)]
 pub struct FrequencyMap<K> {
-    /// T.B.C.
+    /// The map of keys and counts.
     map : HashMap<K, isize>,
-    /// T.B.C.
+    /// The total number of keys represented.
     total : isize,
 }
 
@@ -57,7 +59,7 @@ impl<K> FrequencyMap<K> {
 // Mutating methods
 
 impl<K> FrequencyMap<K> {
-    /// Clears the map, removing all key-count pairs and resets `#total()`.
+    /// Clears the map, removing all records and resets `#total()`.
     #[inline]
     pub fn clear(&mut self) {
         self.map.clear();
@@ -66,9 +68,12 @@ impl<K> FrequencyMap<K> {
 }
 
 impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
-    /// Moves all the elements of `other` into `self`, leaving other
-    /// `empty`.
-    pub fn append(&mut self, other: &mut Self) {
+    /// Moves all the records of `other` into `self`, creating or updating
+    /// records as appropriate, leaving other `empty`.
+    pub fn append(
+        &mut self,
+        other: &mut Self,
+    ) {
         // benchmarking demonstrates that the `#push_n()` variant is
         // superior (at least as far as integer keys is concerned)
 
@@ -101,11 +106,15 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
         self.map.drain()
     }
 
-    /// Inserts an element with a given count, replacing any existing
-    /// element. In the case that `count` is 0 any existing record is
-    /// removed and no element is created.
+    /// Inserts a record with the given `key` and `count`, replacing any
+    /// existing record with that `key`. In the case that `count` is 0 any
+    /// existing record is removed and no record is created.
     #[inline]
-    pub fn insert(&mut self, key: K, count: isize) -> Option<isize>
+    pub fn insert(
+        &mut self,
+        key: K,
+        count: isize,
+    ) -> Option<isize>
     {
         if let Some(v) = self.map.get_mut(&key) {
             self.total -= *v;
@@ -134,17 +143,30 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
 
     // pub fn merge(&mut self, )
 
-    /// Updates the count of the given record by 1, or creates, with a count
-    /// of 1, a new record for the given key.
-    pub fn push(&mut self, key : K) {
+    /// Updates the count by 1 of an existing record identified by `key`, or
+    /// creates, with a count of 1, a new record.
+    ///
+    /// In the case that the resulting count of an existing record is 0 then
+    /// the record is removed.
+    pub fn push(
+        &mut self,
+        key : K,
+    ) {
         self.map.entry(key).and_modify(|v| *v += 1).or_insert(1);
 
         self.total += 1;
     }
 
-    /// Updates the count of the given record by the given count, or
-    /// creates a new record for the given key with the given count.
-    pub fn push_n(&mut self, key : K, count: isize) {
+    /// Updates the count by `count` of an existing record identifed by
+    /// `key`, or creates, with the given `count`, a new record.
+    ///
+    /// In the case that the resulting count of an existing record is 0 then
+    /// the record is removed.
+    pub fn push_n(
+        &mut self,
+        key : K,
+        count: isize,
+    ) {
         // Alas, we cannot use `entry()` because we need to be able to
         // delete the key in the case that `count` + the existing count
         // sums to 0
@@ -155,7 +177,10 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
     /// Removes a key from the map, returning the count of the key if the
     /// key was previously in the map.
     #[inline]
-    pub fn remove<Q>(&mut self, key: &Q) -> Option<isize>
+    pub fn remove<Q>(
+        &mut self,
+        key: &Q,
+    ) -> Option<isize>
     where
         K: std_borrow::Borrow<Q>,
         Q: std_hash::Hash + std_cmp::Eq + ?Sized,
@@ -171,7 +196,10 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
 
     /// Removes a key from the map, returning the stored key and count if
     /// the key was previously in the map.
-    pub fn remove_entry<Q>(&mut self, key: &Q) -> Option<(K, isize)>
+    pub fn remove_entry<Q>(
+        &mut self,
+        key: &Q,
+    ) -> Option<(K, isize)>
     where
         K: std_borrow::Borrow<Q>,
         Q: std_hash::Hash + std_cmp::Eq + ?Sized,
@@ -185,16 +213,22 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
         r
     }
 
-    /// Reserves capacity for at least `additional` more elements to be
+    /// Reserves capacity for at least `additional` more records to be
     /// inserted in the instance.
     #[inline]
-    pub fn reserve(&mut self, additional: usize) {
+    pub fn reserve(
+        &mut self,
+        additional: usize,
+    ) {
         self.map.reserve(additional);
     }
 
     /// Shrinks the capacity of the map with a lower limit.
     #[inline]
-    pub fn shrink_to(&mut self, min_capacity: usize) {
+    pub fn shrink_to(
+        &mut self,
+        min_capacity: usize,
+    ) {
         self.map.shrink_to(min_capacity)
     }
 
@@ -206,9 +240,12 @@ impl<K: std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
 }
 
 impl<K> FrequencyMap<K> {
-    /// Retains only the elements specified by the predicate.
+    /// Retains only the records specified by the predicate.
     #[inline]
-    pub fn retain<F>(&mut self, f: F)
+    pub fn retain<F>(
+        &mut self,
+        f: F,
+    )
     where
         F: Fn(&K, isize) -> bool,
     {
@@ -231,9 +268,12 @@ impl<K> FrequencyMap<K> {
 // Non-mutating methods
 
 impl<K : std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
-    /// Indicates whether a record exists for the given key.
+    /// Indicates whether a record exists for the given `key`.
     #[inline]
-    pub fn contains_key<Q>(&self, key: &Q) -> bool
+    pub fn contains_key<Q>(
+        &self,
+        key: &Q,
+    ) -> bool
     where
         K: std_borrow::Borrow<Q>,
         Q: std_hash::Hash + std_cmp::Eq + ?Sized,
@@ -241,10 +281,13 @@ impl<K : std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
         self.map.contains_key(key)
     }
 
-    /// Obtains the count corresponding to the given key, obtaining 0 in the
-    /// case that no such record exists.
+    /// Obtains the count corresponding to the given `key`, obtaining 0 in
+    /// the case that no such record exists.
     #[inline]
-    pub fn get<Q>(&self, key: &Q) -> isize
+    pub fn get<Q>(
+        &self,
+        key: &Q,
+    ) -> isize
     where
         K: std_borrow::Borrow<Q>,
         Q: std_hash::Hash + std_cmp::Eq + ?Sized,
@@ -263,7 +306,7 @@ impl<K> FrequencyMap<K> {
 }
 
 impl<K> FrequencyMap<K> {
-    /// Returns the number of elements the map can hold without
+    /// Returns the number of records the map can hold without
     /// reallocation.
     #[inline]
     pub fn capacity(&self) -> usize {
@@ -272,19 +315,19 @@ impl<K> FrequencyMap<K> {
 }
 
 impl<K> FrequencyMap<K> {
-    /// Indicates whether the instance contains no elements.
+    /// Indicates whether the instance contains no records.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.is_empty_()
     }
 
-    /// Indicates the number of records.
+    /// Obtains the number of records.
     #[inline]
     pub fn len(&self) -> usize {
         self.len_()
     }
 
-    /// Indicates the total count across all keys.
+    /// Indicates the total frequency count across all records.
     #[inline]
     pub fn total(&self) -> isize {
         self.total_()
@@ -294,7 +337,10 @@ impl<K> FrequencyMap<K> {
 // Implementation
 
 impl<K : std_cmp::Eq + std_hash::Hash> FrequencyMap<K> {
-    fn get_<Q>(&self, key: &Q) -> &isize
+    fn get_<Q>(
+        &self,
+        key: &Q,
+    ) -> &isize
     where
         K: std_borrow::Borrow<Q>,
         Q: std_hash::Hash + std_cmp::Eq + ?Sized,
@@ -350,7 +396,7 @@ impl<K> FrequencyMap<K> {
 // Trait implementations
 
 impl<K: std_cmp::Eq + std_hash::Hash> FromIterator<K> for FrequencyMap<K> {
-    /// Creates an instance from an iterator.
+    /// Creates an instance from an iterator of keys.
     fn from_iter<T: IntoIterator<Item = K>>(iter: T) -> Self {
         let iter = iter.into_iter();
         let (min_size, max_size) = iter.size_hint();
@@ -365,23 +411,6 @@ impl<K: std_cmp::Eq + std_hash::Hash> FromIterator<K> for FrequencyMap<K> {
         for key in iter {
             map.entry(key).and_modify(|v| *v += 1).or_insert(1);
             total += 1;
-        }
-
-        Self {
-            map,
-            total,
-        }
-    }
-}
-
-impl<K: std_cmp::Eq + std_hash::Hash, const N : usize> From<[K; N]> for FrequencyMap<K> {
-    /// Creates an instance from an array of keys.
-    fn from(value: [K; N]) -> Self {
-        let mut map = HashMap::with_capacity(N);
-        let total = N as isize;
-
-        for key in value {
-            map.entry(key).and_modify(|v| *v += 1).or_insert(1);
         }
 
         Self {
@@ -408,6 +437,23 @@ impl<K: std_cmp::Eq + std_hash::Hash, const N : usize> From<[(K, isize); N]> for
     }
 }
 
+impl<K: std_cmp::Eq + std_hash::Hash, const N : usize> From<[K; N]> for FrequencyMap<K> {
+    /// Creates an instance from an array of keys.
+    fn from(value: [K; N]) -> Self {
+        let mut map = HashMap::with_capacity(N);
+        let total = N as isize;
+
+        for key in value {
+            map.entry(key).and_modify(|v| *v += 1).or_insert(1);
+        }
+
+        Self {
+            map,
+            total,
+        }
+    }
+}
+
 impl<K, Q> std_ops::Index<&Q> for FrequencyMap<K>
 where
     K: std_cmp::Eq + std_hash::Hash + std_borrow::Borrow<Q>,
@@ -415,7 +461,6 @@ where
 {
     type Output = isize;
 
-    /// T.B.C.
     #[inline]
     fn index(
         &self,
@@ -426,7 +471,7 @@ where
 }
 
 impl<K> IsEmpty for FrequencyMap<K> {
-    /// T.B.C.
+    /// Indicates whether the instance contains no records.
     #[inline]
     fn is_empty(&self) -> bool {
         self.is_empty_()
@@ -434,7 +479,7 @@ impl<K> IsEmpty for FrequencyMap<K> {
 }
 
 impl<K> Len for FrequencyMap<K> {
-    /// T.B.C.
+    /// Obtains the number of records.
     #[inline]
     fn len(&self) -> usize {
         self.len_()
@@ -594,7 +639,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_FrequencyMap_From_ELEMENTS_1() {
+    fn TEST_FrequencyMap_From_PAIRS_1() {
 
         let ar : [(i32, isize); 0] = [];
         let fm = FrequencyMap::<i32>::from(ar);
@@ -611,7 +656,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_FrequencyMap_From_ELEMENTS_2() {
+    fn TEST_FrequencyMap_From_PAIRS_2() {
 
         let fm = FrequencyMap::<i32>::from([
             // insert list
@@ -639,7 +684,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_FrequencyMap_From_ELEMENTS_3() {
+    fn TEST_FrequencyMap_From_PAIRS_3() {
 
         let fm = FrequencyMap::<i32>::from([
             // insert list
@@ -1402,6 +1447,20 @@ mod tests {
         assert_eq!(2, fm.get(&123));
         assert_eq!(0, fm.get(&101));
         assert_eq!(0, fm.get(&102));
+    }
+
+    #[test]
+    fn TEST_FrequencyMap_EXAMPLE_1() {
+
+        let mut fm = FrequencyMap::default();
+
+        fm.push("cat");
+        fm.push("dog");
+        fm.push("dog");
+
+        assert_eq!(1, fm.get("cat"));
+        assert_eq!(2, fm.get("dog"));
+        assert_eq!(0, fm.get("mouse"));
     }
 }
 

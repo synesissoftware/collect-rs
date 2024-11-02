@@ -67,7 +67,7 @@ fn process_file(
         },
         Err(e) => {
             return Err(std_io::ErrorKind::InvalidInput.into());
-        }
+        },
     }
 
     println!("results ({}, {}):", upm.len(), upm.total());
