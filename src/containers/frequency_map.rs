@@ -697,8 +697,6 @@ mod tests {
             (123, 2),
         ]);
 
-        // eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
-
         assert!(!fm.is_empty());
         assert_eq!(3, fm.len());
         assert_eq!(4, fm.total());
@@ -807,8 +805,6 @@ mod tests {
 
         let mut fm = FrequencyMap::<i32>::default();
 
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
-
         assert!(fm.is_empty());
         assert_eq!(0, fm.len());
         assert_eq!(0, fm.total());
@@ -819,8 +815,6 @@ mod tests {
             assert_eq!(None, r);
         }
 
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
-
         assert!(fm.is_empty());
         assert_eq!(0, fm.len());
         assert_eq!(0, fm.total());
@@ -830,8 +824,6 @@ mod tests {
 
             assert_eq!(None, r);
         }
-
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
 
         assert!(!fm.is_empty());
         assert_eq!(1, fm.len());
@@ -845,8 +837,6 @@ mod tests {
             assert_eq!(Some(123), r);
         }
 
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
-
         assert!(!fm.is_empty());
         assert_eq!(1, fm.len());
         assert_eq!(-123, fm.total());
@@ -858,8 +848,6 @@ mod tests {
 
             assert_eq!(Some(-123), r);
         }
-
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
 
         assert!(fm.is_empty());
         assert_eq!(0, fm.len());
@@ -1290,8 +1278,6 @@ mod tests {
         assert_eq!(501, fm2.total());
 
         fm.append(&mut fm2);
-
-        eprintln!("{}:{}: fm={fm:#?}", file!(), line!());
 
         assert!(fm2.is_empty());
         assert_eq!(0, fm2.len());
