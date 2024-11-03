@@ -7,6 +7,7 @@ use base_traits::{
 
 use std::{
     collections::HashMap,
+    iter::FusedIterator,
     ops as std_ops,
 };
 
@@ -425,6 +426,9 @@ pub struct UnicodePointMapIter<'a> {
     vec_index : Option<usize>,
     /// (Optional) interator into the map.
     map_iter : Option<std::collections::hash_map::Iter<'a, char, isize>>,
+}
+
+impl FusedIterator for UnicodePointMapIter<'_> {
 }
 
 impl Iterator for UnicodePointMapIter<'_> {
@@ -1283,7 +1287,7 @@ mod tests {
     }
 
     #[test]
-    fn TEST_FrequencyMap_EXAMPLE_1() {
+    fn TEST_UnicodePointMap_EXAMPLE_1() {
         let upm = UnicodePointMap::from_iter("The quick brown fox jumps over the lazy dog".chars().into_iter());
 
         assert_eq!(1, upm['a']);
@@ -1320,6 +1324,66 @@ mod tests {
         assert_eq!(0, upm['_']);
         assert_eq!(0, upm['.']);
         assert_eq!(0, upm[',']);
+    }
+
+    #[test]
+    fn TEST_UnicodePointMap_fuse_1() {
+
+        // empty
+        {
+            let upm = UnicodePointMap::default();
+
+            let mut iter = upm.iter();
+
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+        }
+
+        // empty fused
+        {
+            let upm = UnicodePointMap::default();
+
+            let mut iter = upm.iter().fuse();
+
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+        }
+
+        // non-empty
+        {
+            let upm = UnicodePointMap::from(['b', 'a', 'a', 'f']);
+
+            let mut iter = upm.iter();
+
+            assert_eq!(Some(('a', 2)), iter.next());
+            assert_eq!(Some(('b', 1)), iter.next());
+            assert_eq!(Some(('f', 1)), iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+        }
+
+        // non-empty fused
+        {
+            let upm = UnicodePointMap::from(['b', 'a', 'a', 'f']);
+
+            let mut iter = upm.iter().fuse();
+
+            assert_eq!(Some(('a', 2)), iter.next());
+            assert_eq!(Some(('b', 1)), iter.next());
+            assert_eq!(Some(('f', 1)), iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+            assert_eq!(None, iter.next());
+        }
     }
 }
 
