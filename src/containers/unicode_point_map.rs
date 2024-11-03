@@ -7,7 +7,10 @@ use base_traits::{
 
 use std::{
     collections::HashMap,
-    iter::FusedIterator,
+    iter::{
+        ExactSizeIterator,
+        FusedIterator,
+    },
     ops as std_ops,
 };
 
@@ -419,6 +422,7 @@ impl UnicodePointMap {
 }
 
 /// Iterator for [`UnicodePointMap`].
+#[derive(Debug)]
 pub struct UnicodePointMapIter<'a> {
     /// Reference to the providing [`UnicodePointMap`] instance.
     upm : &'a UnicodePointMap,
@@ -426,6 +430,17 @@ pub struct UnicodePointMapIter<'a> {
     vec_index : Option<usize>,
     /// (Optional) interator into the map.
     map_iter : Option<std::collections::hash_map::Iter<'a, char, isize>>,
+    /// iteration index (required to support `ExactSizeIterator`)
+    iix : usize,
+}
+
+impl ExactSizeIterator for UnicodePointMapIter<'_> {
+    /// Obtains the remaining number of records accessible via the iterator
+    /// instance.
+    #[inline]
+    fn len(&self) -> usize {
+        self.upm.len() - self.iix
+    }
 }
 
 impl FusedIterator for UnicodePointMapIter<'_> {
@@ -459,6 +474,8 @@ impl Iterator for UnicodePointMapIter<'_> {
 
                     *ix += 1;
 
+                    self.iix += 1;
+
                     return Some((c, count))
                 } else {
                     *ix += 1;
@@ -472,6 +489,8 @@ impl Iterator for UnicodePointMapIter<'_> {
         if let Some(mi) = &mut self.map_iter {
             match mi.next() {
                 Some((&c, &count)) => {
+                    self.iix += 1;
+
                     return Some((c, count));
                 },
                 None => {
@@ -493,17 +512,18 @@ impl UnicodePointMap {
         let upm = &self;
         let vec_index = Some(0);
         let map_iter = None;
+        let iix = 0;
 
         UnicodePointMapIter {
             upm,
             vec_index,
             map_iter,
+            iix,
         }
     }
 }
 
 impl UnicodePointMap {
-
     /// Obtains the number of records.
     #[inline]
     pub fn len(&self) -> usize {
@@ -697,6 +717,8 @@ mod tests {
         IsEmpty,
         Len,
     };
+
+    use std::iter::ExactSizeIterator as _;
 
 
     #[test]
@@ -1017,7 +1039,7 @@ mod tests {
 
     #[test]
     fn TEST_remove_1() {
-        let mut upm = UnicodePointMap::new('\u{80}');
+        let mut upm = UnicodePointMap::new('\u{50}');
 
         upm.push_n('a', 2);
         upm.push_n('b', 1);
@@ -1383,6 +1405,107 @@ mod tests {
             assert_eq!(None, iter.next());
             assert_eq!(None, iter.next());
             assert_eq!(None, iter.next());
+        }
+    }
+
+    #[test]
+    fn TEST_UnicodePointMap_ExactSizeIterator_len_1() {
+
+        {
+            let upm = UnicodePointMap::new('\u{50}'); // === 'P'
+
+            let mut iter = upm.iter();
+
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+        }
+
+        {
+            let mut upm = UnicodePointMap::new('\u{50}'); // === 'P'
+
+            upm.insert('A', 1);
+            upm.insert('B', 2);
+            upm.insert('C', 3);
+
+            let mut iter = upm.iter();
+
+            assert_eq!(Some(('A', 1)), iter.next());
+            assert_eq!(2, iter.len());
+            assert_eq!(Some(('B', 2)), iter.next());
+            assert_eq!(1, iter.len());
+            assert_eq!(Some(('C', 3)), iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+        }
+
+        {
+            let mut upm = UnicodePointMap::new('\u{50}'); // === 'P'
+
+            upm.insert('N', 1);
+            upm.insert('O', 2);
+            upm.insert('P', 3);
+            upm.insert('Q', 4);
+            upm.insert('R', 5);
+            upm.insert('S', 6);
+            upm.insert('T', 7);
+
+            assert_eq!(28, upm.total());
+
+            let mut iter = upm.iter();
+
+            let mut results = vec![];
+
+            results.push(iter.next().unwrap());
+            assert_eq!(6, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(5, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(4, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(3, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(2, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(1, iter.len());
+
+            results.push(iter.next().unwrap());
+            assert_eq!(0, iter.len());
+
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+            assert_eq!(None, iter.next());
+            assert_eq!(0, iter.len());
+
+            results.sort();
+
+
+            assert_eq!(('N', 1), results[0]);
+            assert_eq!(('O', 2), results[1]);
+            assert_eq!(('P', 3), results[2]);
+            assert_eq!(('Q', 4), results[3]);
+            assert_eq!(('R', 5), results[4]);
+            assert_eq!(('S', 6), results[5]);
+            assert_eq!(('T', 7), results[6]);
         }
     }
 }
