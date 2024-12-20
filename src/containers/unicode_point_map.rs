@@ -629,7 +629,7 @@ impl std_ops::Index<char> for UnicodePointMap {
     /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
     ///   [0, 0x110000);
     ///
-    /// # Panics
+    /// # Panics:
     ///
     /// May panic if the index is out of bounds.
     #[inline]
@@ -654,7 +654,7 @@ impl std_ops::Index<&char> for UnicodePointMap {
     /// - `c` - `c` must be a valid [`char`] instance, i.e. be in the range
     ///   [0, 0x110000);
     ///
-    /// # Panics
+    /// # Panics:
     ///
     /// May panic if the index is out of bounds.
     #[inline]
