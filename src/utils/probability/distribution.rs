@@ -1,12 +1,11 @@
 
 use crate::containers::FrequencyMap;
 
-use std::convert as std_convert;
-
 
 // TODO: remove this and make generic
 pub type ValueType = u64;
 
+#[derive(Debug)]
 pub struct DistributionAnalysis {
     count : isize,
     min : Option<ValueType>,
@@ -98,12 +97,12 @@ impl DistributionAnalysis {
 
 // Trait implementations
 
-impl From<FrequencyMap<u64>> for DistributionAnalysis {
+impl From<&FrequencyMap<u64>> for DistributionAnalysis {
     /// T.B.C.
     ///
     /// # Note:
     /// This function assumes all counts are positive.
-    fn from(value: FrequencyMap<u64>) -> Self {
+    fn from(value: &FrequencyMap<u64>) -> Self {
 
         let mut count = 0isize;
         let mut min = None;
@@ -176,7 +175,9 @@ impl From<FrequencyMap<u64>> for DistributionAnalysis {
                 let p99_count = (total_count + 1) * 99 / 100;
                 let p99_9_count = (total_count + 1) * 999 / 1000;
                 let p99_99_count = (total_count + 1) * 9999 / 10000;
+                /*
                 let p100_count = (total_count + 1) * 10000 / 10000;
+                 */
                 let mut cum_count = 0;
 
                 for &(k, n) in &pairs {
