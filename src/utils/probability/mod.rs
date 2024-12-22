@@ -2,7 +2,7 @@
 
 use crate::macros::declare_and_publish;
 
-pub mod probability;
+declare_and_publish!(distribution, DistributionAnalysis);
 
 
 // ///////////////////////////// end of file //////////////////////////// //
