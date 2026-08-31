@@ -13,17 +13,22 @@ categories = [
 	"rust-patterns",
 ]
 description = "Special and custom Collections and Containers (for Rust)"
+documentation = "https://docs.rs/collect-rs"
 edition = "2021"
 homepage = "https://github.com/synesissoftware/collect-rs"
 keywords = [
-	"containers",
 	"collections",
+	"containers",
 ]
 license = "BSD-3-Clause"
 name = "collect-rs"
 readme = "README.md"
 repository = "https://github.com/synesissoftware/collect-rs"
-version = "0.2.0"
+rust-version = "1.74"
+version = "0.2.1"
+
+[package.metadata.docs.rs]
+no-default-features = true
 
 
 # ##########################################################
@@ -68,13 +73,13 @@ null-feature = []
 
 [dependencies]
 
-base-traits = { version = "0.0" }
+base-traits = { version = "0.1" }
 
 
 [dev-dependencies]
 
 criterion = { version = "0.5" }
-test_help-rs = { version = "0.1" }
+test_help-rs = { version = "0.2" }
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

@@ -2,9 +2,13 @@
 
 Special and custom Collections and Containers for Rust
 
+![Language](https://img.shields.io/badge/Rust-000000?style=flat&logo=rust&logoColor=white)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Crates.io](https://img.shields.io/crates/v/collect-rs.svg)](https://crates.io/crates/collect-rs)
-
-## Introduction
+[![GitHub release](https://img.shields.io/github/v/release/synesissoftware/collect-rs.svg)](https://github.com/synesissoftware/collect-rs/releases/latest)
+![MSRV](https://img.shields.io/badge/MSRV-1.74-lightgrey)
+[![CI](https://github.com/synesissoftware/collect-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/synesissoftware/collect-rs/actions/workflows/ci.yml)
+[![docs.rs](https://docs.rs/collect-rs/badge.svg)](https://docs.rs/collect-rs)
 
 
 ## Table of Contents <!-- omit in toc -->
@@ -12,13 +16,38 @@ Special and custom Collections and Containers for Rust
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Components](#components)
+  - [Constants](#constants)
+  - [Enumerations](#enumerations)
+  - [Features](#features)
+  - [Functions](#functions)
+  - [Macros](#macros)
+  - [Structures](#structures)
+  - [Traits](#traits)
+- [Examples](#examples)
+- [Project Information](#project-information)
+  - [Where to get help](#where-to-get-help)
+  - [Contribution guidelines](#contribution-guidelines)
+  - [Dependencies](#dependencies)
+    - [Efferent (fan-out)](#efferent-fan-out)
+      - [Runtime Dependencies](#runtime-dependencies)
+      - [Build Dependencies](#build-dependencies)
+      - [Development Dependencies](#development-dependencies)
+    - [Afferent (fan-in)](#afferent-fan-in)
+  - [Related projects](#related-projects)
+  - [License](#license)
+
+
+## Introduction
+
+**collect-rs** provides specialized collection types for counting and
+measuring unique values, including generic keys and Unicode code points.
 
 ## Installation
 
 Reference in **Cargo.toml** in the usual way:
 
 ```toml
-collect-rs = { version = "0.1" }
+collect-rs = { version = "0.2.1" }
 ```
 
 
@@ -32,6 +61,15 @@ No public constants are defined at this time.
 ### Enumerations
 
 No public enumerations are defined at this time.
+
+
+### Features
+
+The following placeholder features are defined in **Cargo.toml**:
+
+* `"_NEVER_TO_BE_ENABLED"` — a feature that must never be specified;
+* `"null-feature"` — a feature with no effect, useful for simplifying driver
+  scripts;
 
 
 ### Functions
@@ -61,7 +99,7 @@ The following are terse examples of some of the components provided in the crate
 
 ### `FrequencyMap`
 
-```Rust
+```rust
 	let mut fm = FrequencyMap::default();
 
 	fm.push("cat");
@@ -75,7 +113,7 @@ The following are terse examples of some of the components provided in the crate
 
 ### `UnicodePointMap`
 
-```Rust
+```rust
 	let upm = UnicodePointMap::from_iter("The quick brown fox jumps over the lazy dog".chars().into_iter());
 
 	assert_eq!(1, upm['a']);
@@ -129,17 +167,31 @@ Defect reports, feature requests, and pull requests are welcome on https://githu
 
 ### Dependencies
 
-Crates upon which **collect-rs** depend:
+#### Efferent (fan-out)
+
+Libraries upon which **collect-rs** depends:
+
+##### Runtime Dependencies
 
 * [**base-traits**](https://github.com/synesissoftware/base-traits);
 
 
-##### Dev Dependencies
+##### Build Dependencies
 
-Crates upon which **collect-rs** depend:
+No build dependencies are required.
+
+
+##### Development Dependencies
 
 * [**criterion**](https://github.com/bheisler/criterion.rs);
 * [**test_help-rs**](https://github.com/synesissoftware/test_help-rs);
+
+
+#### Afferent (fan-in)
+
+Projects that depend on **collect-rs**:
+
+* [**shwild.Rust**](https://github.com/synesissoftware/shwild.Rust);
 
 
 ### Related projects
