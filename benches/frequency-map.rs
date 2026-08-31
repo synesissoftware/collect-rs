@@ -16,8 +16,8 @@ use criterion::{
 };
 
 
+#[rustfmt::skip]
 mod constants {
-    #![rustfmt::skip]
 
     use std::ops as std_ops;
 
