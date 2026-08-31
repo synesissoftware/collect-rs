@@ -50,7 +50,7 @@ fn main() -> Result<(), std_io::Error> {
 }
 
 fn process_file(
-    process_path : &str,
+    _process_path : &str,
     input_path : &str,
 ) -> Result<(), std_io::Error> {
     println!("processing '{input_path}'");
@@ -65,7 +65,7 @@ fn process_file(
                 upm.push(c);
             }
         },
-        Err(e) => {
+        Err(_e) => {
             return Err(std_io::ErrorKind::InvalidInput.into());
         },
     }

@@ -1,6 +1,7 @@
 // benches/unicode-point-map.rs : benchmarking of `UnicodePointMap`
 
 #![allow(non_snake_case)]
+#![allow(clippy::useless_conversion)]
 
 use collect_rs::containers::UnicodePointMap;
 
@@ -11,18 +12,13 @@ use criterion::{
     Criterion,
 };
 
-use std::{
-    fmt as std_fmt,
-    ops as std_ops,
-};
+use std::ops as std_ops;
 
 
 mod constants {}
 
 
 mod implementation {
-    use criterion::BenchmarkId;
-
     /*
     pub(super) fn make_id(
         benchmarked_function_name : &'static str,

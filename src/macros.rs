@@ -5,7 +5,10 @@
 /// // file src/my_module/mod.rs
 /// use crate::macros::declare_and_publish;
 ///
-/// declare_and_publish!(frequency_map, FrequencyMap, FrequencySet); // declares mod `frequency_map` and uses publicly types `FrequencyMap` and `FrequencySet` from it
+/// declare_and_publish!(frequency_map, FrequencyMap, FrequencySet);
+///
+/// This declares mod `frequency_map` and publicly uses types `FrequencyMap`
+/// and `FrequencySet` from it.
 /// ```
 macro_rules! declare_and_publish {
     ($mod_name:ident, $($type_name:ident),*) => {

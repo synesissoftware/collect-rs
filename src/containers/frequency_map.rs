@@ -18,8 +18,10 @@ use std::{
 /// contains.
 ///
 /// # See:
-/// - `stlsoft::frequency_map<>` - C++ class template in [**STLSoft**](https://github.com/synesissoftware/STLSoft-1.11);
-/// - `Xqsr3::Containers::FrequencyMap` - Ruby class in [**xqsr3**](https://github.com/synesissoftware/xqsr3);
+/// - `stlsoft::frequency_map<>` - C++ class template in
+///   [**STLSoft**](https://github.com/synesissoftware/STLSoft-1.11);
+/// - `Xqsr3::Containers::FrequencyMap` - Ruby class in
+///   [**xqsr3**](https://github.com/synesissoftware/xqsr3);
 #[derive(Clone)]
 #[derive(Debug)]
 #[derive(Default)]
@@ -490,6 +492,7 @@ impl<K> Len for FrequencyMap<K> {
 #[cfg(test)]
 mod tests {
     #![allow(non_snake_case)]
+    #![allow(clippy::useless_conversion)]
 
     use super::FrequencyMap;
 

@@ -1,0 +1,27 @@
+# collect-rs - TODO <!-- omit in toc -->
+
+
+## Table of Contents <!-- omit in toc -->
+
+- [Functional improvements](#functional-improvements)
+- [Performance improvements](#performance-improvements)
+- [Packaging improvements](#packaging-improvements)
+
+
+## Functional improvements
+
+* [ ] consider finding the maximum key before allocating
+  `UnicodePointMap` contiguous storage;
+
+
+## Performance improvements
+
+* \<none>
+
+
+## Packaging improvements
+
+* \<none>
+
+
+<!-- ########################### end of file ########################### -->
