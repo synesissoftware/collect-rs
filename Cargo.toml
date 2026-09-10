@@ -61,6 +61,10 @@ harness = false
 name = "text-file-char-freq"
 path = "examples/text-file-char-freq.rs"
 
+[[example]]
+name = "versions"
+path = "examples/versions/main.rs"
+
 
 # ##########################################################
 # Features
