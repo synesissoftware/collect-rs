@@ -6,13 +6,15 @@
 use collect_rs::containers::UnicodePointMap;
 
 use criterion::{
-    black_box,
     criterion_group,
     criterion_main,
     Criterion,
 };
 
-use std::ops as std_ops;
+use std::{
+    hint::black_box,
+    ops as std_ops,
+};
 
 
 mod constants {}

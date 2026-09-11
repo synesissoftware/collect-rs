@@ -8,12 +8,13 @@
 use collect_rs::containers::FrequencyMap;
 
 use criterion::{
-    black_box,
     criterion_group,
     criterion_main,
     BatchSize,
     Criterion,
 };
+
+use std::hint::black_box;
 
 
 #[rustfmt::skip]

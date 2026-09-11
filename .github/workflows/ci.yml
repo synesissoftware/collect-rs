@@ -24,7 +24,7 @@ env:
 
 jobs:
   check:
-    name: Test, Clippy, Fmt, Docs, Checkers, Package
+    name: Stable checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,27 +33,27 @@ jobs:
         with:
           components: clippy
 
-      - name: Install pinned nightly rustfmt
-        run: rustup toolchain install nightly-2026-08-08 --profile minimal --component rustfmt
-
       - uses: Swatinem/rust-cache@v2
 
       - name: cargo test (all targets)
-        run: cargo +stable test --all-targets --locked
+        run: cargo test --all-targets --locked
 
       - name: cargo test (no default features)
-        run: cargo +stable test --no-default-features --locked
+        run: cargo test --no-default-features --locked
 
       - name: cargo clippy
-        run: cargo +stable clippy --all-targets --locked -- -D warnings
+        run: cargo clippy --all-targets --locked -- -D warnings
 
       - name: cargo doc
-        run: RUSTDOCFLAGS="-D warnings" cargo +stable doc --no-deps --locked
+        run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --locked
 
-      - name: cargo build (examples)
-        run: cargo +stable build --examples --locked
+      - name: Install pinned nightly rustfmt
+        run: rustup toolchain install nightly-2026-09-10 --profile minimal --component rustfmt
 
       - name: rustfmt
+        env:
+          RUSTFMT_TOOLCHAIN: nightly-2026-09-10
+          RUSTUP_TOOLCHAIN: nightly-2026-09-10
         run: ./scripts/fmt --check
 
       - name: DOC_76 checker
@@ -65,8 +65,11 @@ jobs:
       - name: DERIVE_LAYOUT checker
         run: python3 scripts/check_derives.py
 
+      - name: cargo build (examples)
+        run: cargo build --examples --locked
+
       - name: cargo publish (dry run)
-        run: cargo +stable publish --dry-run --locked
+        run: cargo publish --dry-run --locked
 
   msrv:
     name: MSRV (1.74)
@@ -79,4 +82,4 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: cargo check (library)
-        run: cargo +1.74.0 check --lib --locked
+        run: cargo check --lib --locked

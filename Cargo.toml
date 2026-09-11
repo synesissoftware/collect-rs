@@ -15,6 +15,15 @@ categories = [
 description = "Special and custom Collections and Containers (for Rust)"
 documentation = "https://docs.rs/collect-rs"
 edition = "2021"
+exclude = [
+	".cargo",
+	".cursor",
+	".github",
+	".vimrc",
+	".vscode",
+	"scripts",
+	"target",
+]
 homepage = "https://github.com/synesissoftware/collect-rs"
 keywords = [
 	"collections",
@@ -25,7 +34,9 @@ name = "collect-rs"
 readme = "README.md"
 repository = "https://github.com/synesissoftware/collect-rs"
 rust-version = "1.74"
-version = "0.2.1"
+version = "0.2.2"
+
+# docs.rs builds without default features.
 
 [package.metadata.docs.rs]
 no-default-features = true
@@ -50,11 +61,18 @@ harness = false
 name = "text-file-char-freq"
 path = "examples/text-file-char-freq.rs"
 
+[[example]]
+name = "versions"
+path = "examples/versions/main.rs"
+
 
 # ##########################################################
 # Features
 
 [features]
+
+default = [
+]
 
 # General features:
 #
@@ -64,6 +82,7 @@ path = "examples/text-file-char-freq.rs"
 _NEVER_TO_BE_ENABLED = []
 null-feature = []
 
+
 # Crate-specific features:
 #
 
@@ -71,15 +90,20 @@ null-feature = []
 # ##########################################################
 # Dependencies
 
+[build-dependencies]
+
 [dependencies]
 
-base-traits = { version = "0.1" }
+base-traits = { version = "0.1", default-features = false, features = [
+]}
 
 
 [dev-dependencies]
 
-criterion = { version = "0.5" }
-test_help-rs = { version = "0.2" }
+criterion = { version = "0.8", default-features = false, features = [
+]}
+test_help-rs = { version = "0.2", default-features = false, features = [
+]}
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
