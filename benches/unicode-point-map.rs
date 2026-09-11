@@ -11,8 +11,10 @@ use criterion::{
     Criterion,
 };
 
-use std::hint::black_box;
-use std::ops as std_ops;
+use std::{
+    hint::black_box,
+    ops as std_ops,
+};
 
 
 mod constants {}
