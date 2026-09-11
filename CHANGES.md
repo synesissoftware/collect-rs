@@ -9,6 +9,7 @@
 * documented the MSRV and canonicalised **Cargo.toml** features and dependency sections;
 * updated **base-traits**, **test_help-rs**, and **criterion** to current compatible releases;
 * improved the test-name checker and crate-level documentation;
+* restored benchmark compatibility with current Criterion and stable Rust;
 * refreshed the collection macro documentation and added the public namespace TODO;
 
 
