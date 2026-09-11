@@ -10,10 +10,8 @@
 
 ## Functional improvements
 
-* [ ] consider finding the maximum key before allocating
-  `UnicodePointMap` contiguous storage;
-* [ ] Resolve the public namespace problem, including the empty
-  `collections` and `utils` modules and the container export policy;
+* [ ] consider finding the maximum key before allocating `UnicodePointMap` contiguous storage;
+* [ ] Resolve the public namespace problem, including the empty `collections` and `utils` modules and the container export policy;
 
 
 ## Performance improvements
